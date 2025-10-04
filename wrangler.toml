@@ -5,3 +5,6 @@ pages_build_output_dir = ".vercel/output/static"
 
 [vars]
 NEXT_ON_PAGES = "1"
+
+# Local-only bindings live in `wrangler.preview.toml` so production deployments can
+# be configured directly in the Cloudflare Pages dashboard.
