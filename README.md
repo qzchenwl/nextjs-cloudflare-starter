@@ -53,7 +53,7 @@ Open <http://localhost:3000> to view the application.
 
 ### Connecting D1 and R2
 
-This scaffold exposes bindings for Cloudflare [D1](https://developers.cloudflare.com/d1/) and [R2](https://developers.cloudflare.com/r2/) so you can work with relational data and object storage directly from the Edge runtime.
+This scaffold exposes bindings for Cloudflare [D1](https://developers.cloudflare.com/d1/) and [R2](https://developers.cloudflare.com/r2/) so you can work with relational data and object storage directly from the Edge runtime. The landing page renders the `/api/hello` endpoint and shows the binding status at build time, making it easy to confirm everything is wired up.
 
 1. Create a D1 database and R2 bucket:
 
@@ -62,14 +62,25 @@ This scaffold exposes bindings for Cloudflare [D1](https://developers.cloudflare
    wrangler r2 bucket create nextjs-cloudflare-starter-assets
    ```
 
-2. Update the placeholders in `wrangler.toml` with the IDs/names returned by Wrangler **only if you plan to run `pnpm cf:preview` locally**. These bindings are declared as `DB` (D1) and `R2` (object storage) so the sample API route can discover them automatically.
-3. When deploying through Cloudflare Pages you can attach the same resources in the dashboard without touching the repository:
-   - Go to **Pages → _your project_ → Settings → Functions** and add the D1 database under **D1 Databases** with the binding name `DB`.
-   - In the same screen, add the R2 bucket under **R2 Buckets** with the binding name `R2`.
-   - Because the scaffold already imports these binding names, no code change is required for production deployments.
+2. Tell Cloudflare Pages about the resources. Because this project uses `wrangler.toml`, the Pages dashboard shows the banner **“Bindings for this project are being managed through wrangler.toml”** and disables manual binding creation. Instead, commit the bindings to `wrangler.toml`:
+
+   ```toml
+   [[d1_databases]]
+   binding = "DB"
+   database_name = "nextjs-cloudflare-starter-db" # replace with your database name
+   database_id = "00000000-0000-0000-0000-000000000000" # replace with your database ID
+
+   [[r2_buckets]]
+   binding = "R2"
+   bucket_name = "nextjs-cloudflare-starter-assets" # replace with your bucket name
+   ```
+
+   - When creating resources with `wrangler`, copy the real `database_id` from the CLI output.
+   - If you already deployed the project before adding bindings, trigger a new deployment so the Pages runtime receives the updated configuration.
+3. (Optional) For local previews via `pnpm cf:preview`, you also need to run `wrangler login` once and ensure your `account_id` is set in `wrangler.toml` or available as the `CLOUDFLARE_ACCOUNT_ID` environment variable.
 4. Re-run `pnpm cf:build` followed by `pnpm cf:preview` to test locally, or push to your Git provider to deploy.
 
-The sample API route at `/api/hello` automatically detects whether the bindings are configured. When both are available it will run a simple D1 query and list up to five R2 object keys to confirm the integration.
+The `/api/hello` route executes a `SELECT datetime('now')` statement against D1 and lists up to five object keys from R2. The homepage surfaces this response so you can quickly validate both integrations after each deployment.
 
 ### Local preview
 
