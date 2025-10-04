@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "cf:build": "next-on-pages",
-    "cf:preview": "wrangler pages dev .vercel/output/static --compatibility-date=2024-05-01"
+    "cf:preview": "wrangler pages dev .vercel/output/static --config wrangler.preview.toml --compatibility-date=2024-05-01"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",
