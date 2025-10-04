@@ -48,6 +48,7 @@ Open <http://localhost:3000> to view the application.
    - Ensure any API routes export `export const runtime = "edge";` so they are deployed as Cloudflare-compatible edge functions.
    - (Optional) Under **Environment variables**, add `NODE_VERSION=18` to match local development.
 5. Save the configuration and click **Deploy site**. Cloudflare Pages will run the build command and publish the static assets and functions defined in the `.vercel/output` folder.
+6. After the first deployment completes, open the project in the Pages dashboard, go to **Settings → Functions → Compatibility flags**, and add `nodejs_compat` to both the production and preview environments so Node.js built-ins used by Next.js are available at runtime.
 
 ### Local preview
 
