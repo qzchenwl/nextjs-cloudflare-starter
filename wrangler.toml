@@ -1,0 +1,7 @@
+name = "nextjs-cloudflare-starter"
+compatibility_date = "2024-05-01"
+pages_build_output_dir = ".vercel/output/static"
+pages_functions_dir = ".vercel/output/functions"
+
+[vars]
+NEXT_ON_PAGES = "1"
