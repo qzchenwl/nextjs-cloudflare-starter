@@ -1,0 +1,14 @@
+node_modules
+.pnp.*
+.next
+out
+.vscode
+.env*
+.vercel
+.DS_Store
+wrangler.toml.local
+functions
+.vercel/output
+
+# Cloudflare Pages build artifacts
+.wrangler/
