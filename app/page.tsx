@@ -37,7 +37,7 @@ export default function HomePage() {
         </div>
         <div className="flex flex-col items-center gap-3 sm:flex-row">
           <Button asChild size="lg">
-            <Link href="https://developers.cloudflare.com/pages/framework-guides/deploy-a-nextjs-site/">
+            <Link href="https://developers.cloudflare.com/pages/framework-guides/nextjs/">
               View Cloudflare Pages guide
             </Link>
           </Button>
