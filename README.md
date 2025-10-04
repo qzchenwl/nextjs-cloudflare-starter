@@ -27,6 +27,8 @@ The starter ships with convenience scripts for adapting and previewing the app w
 ```bash
 # Produce the Cloudflare build output inside .open-next
 npm run cloudflare:build
+# (This also generates the `_worker.js` shim and `_routes.json` required by
+# Cloudflare Pages deployments.)
 
 # Preview the production worker locally with Wrangler
 npm run cloudflare:preview
