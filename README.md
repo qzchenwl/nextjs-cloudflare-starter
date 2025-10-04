@@ -62,20 +62,20 @@ This scaffold exposes bindings for Cloudflare [D1](https://developers.cloudflare
    wrangler r2 bucket create nextjs-cloudflare-starter-assets
    ```
 
-2. Tell Cloudflare Pages about the resources. Because this project uses `wrangler.toml`, the Pages dashboard shows the banner **“Bindings for this project are being managed through wrangler.toml”** and disables manual binding creation. Instead, commit the bindings to `wrangler.toml`:
+2. Tell Cloudflare Pages about the resources. Because this project uses `wrangler.toml`, the Pages dashboard shows the banner **“Bindings for this project are being managed through wrangler.toml”** and disables manual binding creation. Instead, commit the bindings to `wrangler.toml`. For example, if you created the resources mentioned above, your configuration should look like this:
 
    ```toml
    [[d1_databases]]
    binding = "DB"
-   database_name = "nextjs-cloudflare-starter-db" # replace with your database name
-   database_id = "00000000-0000-0000-0000-000000000000" # replace with your database ID
+   database_name = "nextjs-cloudflare-starter-db"
+   database_id = "057a06ef-544d-4ab3-b464-9288c72c0831"
 
    [[r2_buckets]]
    binding = "R2"
-   bucket_name = "nextjs-cloudflare-starter-assets" # replace with your bucket name
+   bucket_name = "nextjs-cloudflare-starter-assets"
    ```
 
-   - When creating resources with `wrangler`, copy the real `database_id` from the CLI output.
+   - Replace the values with your own resource names and the exact `database_id` returned by `wrangler d1 create` if they differ.
    - If you already deployed the project before adding bindings, trigger a new deployment so the Pages runtime receives the updated configuration.
 3. (Optional) For local previews via `pnpm cf:preview`, you also need to run `wrangler login` once and ensure your `account_id` is set in `wrangler.toml` or available as the `CLOUDFLARE_ACCOUNT_ID` environment variable.
 4. Re-run `pnpm cf:build` followed by `pnpm cf:preview` to test locally, or push to your Git provider to deploy.
