@@ -35,11 +35,29 @@ Open <http://localhost:3000> to view the application.
 
 ## Deploying to Cloudflare Pages
 
-1. Create a new Cloudflare Pages project and connect it to this repository.
-2. Set the build command to `pnpm cf:build`.
-3. Set the build output directory to `.vercel/output/static`.
-4. Set the functions directory to `.vercel/output/functions` (Pages -> Functions).
-5. Deploy. Wrangler configuration is provided in `wrangler.toml` for local previews.
+### Dashboard setup
+
+1. Sign in to the [Cloudflare dashboard](https://dash.cloudflare.com/) and navigate to **Pages** → **Create a project**.
+2. Choose **Connect to Git** and authorize the Git provider that hosts this repository.
+3. Select the repository for this project and keep the production branch as `main` (or whichever branch you want to deploy).
+4. In the **Build settings** panel, set:
+   - **Framework preset:** leave as **None** (Next.js is handled by `@cloudflare/next-on-pages`).
+   - **Build command:** `pnpm cf:build`
+   - **Build output directory:** `.vercel/output/static`
+   - Expand **Functions** and set **Functions directory** to `.vercel/output/functions`.
+   - (Optional) Under **Environment variables**, add `NODE_VERSION=18` to match local development.
+5. Save the configuration and click **Deploy site**. Cloudflare Pages will run the build command and publish the static assets and functions defined in the `.vercel/output` folder.
+
+### Local preview
+
+The included `wrangler.toml` and `pnpm cf:preview` script let you test the same build locally before pushing to Git. Run:
+
+```bash
+pnpm cf:build
+pnpm cf:preview
+```
+
+Wrangler will serve the output on <http://localhost:8788> so you can verify the Pages deployment bundle.
 
 ## Adding shadcn/ui components
 
