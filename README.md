@@ -8,7 +8,7 @@ A modern Next.js scaffold that runs natively on [Cloudflare Pages](https://devel
 - **Tailwind CSS 3** with shadcn/ui primitives and helper utilities
 - **Cloudflare Pages ready** via [`@cloudflare/next-on-pages`](https://github.com/cloudflare/next-on-pages) and Wrangler scripts
 - **Strict linting** using `eslint-config-next`
-- Example API route and UI components to kickstart development
+- Example API route running on the Edge Runtime plus UI components to kickstart development
 
 ## Prerequisites
 
@@ -45,6 +45,7 @@ Open <http://localhost:3000> to view the application.
    - **Build command:** `pnpm cf:build`
    - **Build output directory:** `.vercel/output/static`
    - Expand **Functions** and set **Functions directory** to `.vercel/output/functions`.
+   - Ensure any API routes export `export const runtime = "edge";` so they are deployed as Cloudflare-compatible edge functions.
    - (Optional) Under **Environment variables**, add `NODE_VERSION=18` to match local development.
 5. Save the configuration and click **Deploy site**. Cloudflare Pages will run the build command and publish the static assets and functions defined in the `.vercel/output` folder.
 
