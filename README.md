@@ -114,6 +114,37 @@ public/         # Static assets
 
 ## Troubleshooting
 
+### Investigating "Internal Server Error" responses
+
+1. Open your deployed site and scroll to the **Runtime diagnostics** panel under the D1/R2 section. The panel records whether
+   Cloudflare bindings were detected and lists any runtime exceptions captured by `/api/hello`.
+2. Hit the API directly with `curl -i https://<your-domain>/api/hello` and note the `cf-ray` header value. Keeping this handy
+   helps when escalating issues to Cloudflare support.
+3. Tail the live function logs to view stack traces in real time:
+
+   ```bash
+   wrangler pages functions tail <project-name>
+   ```
+
+   You can also inspect a specific deployment with:
+
+   ```bash
+   wrangler pages deployment tail <project-name> --deployment-id <deployment-id>
+   ```
+
+   Run `wrangler pages deployment list <project-name>` first if you need to locate the deployment ID.
+4. Validate the D1 and R2 resources themselves:
+
+   ```bash
+   wrangler d1 execute nextjs-cloudflare-starter-db --command "SELECT datetime('now');"
+   wrangler r2 object list nextjs-cloudflare-starter-assets --limit 5
+   ```
+
+   Replace the names with your own resources if they differ. Errors here indicate a misconfigured binding or missing
+   permissions.
+5. If a binding is missing in diagnostics, confirm the entry is present in `wrangler.toml`, commit the change, and trigger a new
+   deployment so Pages picks up the updated configuration.
+
 - If `pnpm dev` fails with `Module not found: Can't resolve '@cloudflare/next-on-pages'`, ensure the dependencies have been
   installed by running `pnpm install` (or `pnpm install --frozen-lockfile` in CI) before starting the development server.
 

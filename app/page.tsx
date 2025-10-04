@@ -17,12 +17,29 @@ type IntegrationResult = {
   sampleKeys?: string[];
 };
 
+type DiagnosticEntry = {
+  scope: "env" | "d1" | "r2" | "runtime";
+  message: string;
+  stack?: string;
+};
+
+type Diagnostics = {
+  timestamp: string;
+  envDetected: boolean;
+  bindings: {
+    d1: boolean;
+    r2: boolean;
+  };
+  errors: DiagnosticEntry[];
+};
+
 type HelloResponse = {
   message: string;
   integrations: {
     d1: IntegrationResult;
     r2: IntegrationResult;
   };
+  diagnostics?: Diagnostics;
 };
 
 const highlights = [
@@ -48,7 +65,12 @@ const highlights = [
   },
 ];
 
-async function getIntegrationStatus(): Promise<HelloResponse | { error: string }> {
+type HelloError = {
+  error: string;
+  diagnostics?: Diagnostics;
+};
+
+async function getIntegrationStatus(): Promise<HelloResponse | HelloError> {
   try {
     const headersList = headers();
     const host = headersList.get("x-forwarded-host") ?? headersList.get("host");
@@ -61,11 +83,34 @@ async function getIntegrationStatus(): Promise<HelloResponse | { error: string }
       cache: "no-store",
     });
 
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
+    let parsed: unknown = null;
+
+    try {
+      parsed = await response.json();
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn("Failed to parse /api/hello JSON response", error);
+      }
     }
 
-    return (await response.json()) as HelloResponse;
+    if (response.ok && parsed && typeof parsed === "object") {
+      return parsed as HelloResponse;
+    }
+
+    const diagnostics =
+      parsed && typeof parsed === "object" && "diagnostics" in parsed
+        ? (parsed as { diagnostics?: Diagnostics }).diagnostics
+        : undefined;
+
+    const message =
+      parsed && typeof parsed === "object" && "message" in parsed && typeof (parsed as { message?: unknown }).message === "string"
+        ? ((parsed as { message?: string }).message as string)
+        : `Request failed with status ${response.status}`;
+
+    return {
+      error: message,
+      diagnostics,
+    } satisfies HelloError;
   } catch (error) {
     return {
       error:
@@ -79,6 +124,7 @@ async function getIntegrationStatus(): Promise<HelloResponse | { error: string }
 export default async function HomePage() {
   const helloData = await getIntegrationStatus();
   const integrations = "integrations" in helloData ? helloData.integrations : null;
+  const diagnostics = "diagnostics" in helloData ? helloData.diagnostics : null;
 
   return (
     <main className="flex min-h-screen flex-col bg-gradient-to-b from-background via-background to-muted">
@@ -126,8 +172,13 @@ export default async function HomePage() {
             </p>
           </div>
           {"error" in helloData ? (
-            <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
-              {helloData.error}
+            <div className="space-y-3">
+              <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+                {helloData.error}
+              </div>
+              {diagnostics && diagnostics.errors.length > 0 && (
+                <DiagnosticPanel diagnostics={diagnostics} />
+              )}
             </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2">
@@ -189,7 +240,56 @@ export default async function HomePage() {
             </div>
           )}
         </div>
+        {diagnostics && diagnostics.errors.length > 0 && "integrations" in helloData && (
+          <div className="w-full max-w-4xl">
+            <DiagnosticPanel diagnostics={diagnostics} />
+          </div>
+        )}
       </section>
     </main>
+  );
+}
+
+function DiagnosticPanel({ diagnostics }: { diagnostics: Diagnostics }) {
+  return (
+    <div className="space-y-4 rounded-2xl border border-border bg-background/70 p-6 text-left shadow-sm">
+      <div className="space-y-1">
+        <h3 className="text-lg font-semibold text-foreground">Runtime diagnostics</h3>
+        <p className="text-sm text-muted-foreground">
+          Timestamp: <code className="rounded bg-muted px-1 py-0.5 text-xs">{diagnostics.timestamp}</code>
+        </p>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1 text-sm text-muted-foreground">
+          <p>
+            Cloudflare context detected: <span className="font-medium text-foreground">{diagnostics.envDetected ? "Yes" : "No"}</span>
+          </p>
+          <p>
+            D1 binding available: <span className="font-medium text-foreground">{diagnostics.bindings.d1 ? "Yes" : "No"}</span>
+          </p>
+          <p>
+            R2 binding available: <span className="font-medium text-foreground">{diagnostics.bindings.r2 ? "Yes" : "No"}</span>
+          </p>
+        </div>
+        <div className="rounded-lg border border-border/60 bg-muted/40 p-3 text-xs text-muted-foreground">
+          <p className="font-semibold text-foreground">Errors captured</p>
+          <ul className="mt-2 space-y-2">
+            {diagnostics.errors.map((entry, index) => (
+              <li key={`${entry.scope}-${index}`} className="space-y-1">
+                <p className="font-medium text-foreground">
+                  [{entry.scope.toUpperCase()}] {entry.message}
+                </p>
+                {entry.stack && (
+                  <details className="rounded-md border border-border/60 bg-background/70 p-2">
+                    <summary className="cursor-pointer text-foreground">Stack trace</summary>
+                    <pre className="mt-2 whitespace-pre-wrap text-xs leading-relaxed">{entry.stack}</pre>
+                  </details>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 }
