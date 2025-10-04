@@ -1,0 +1,14 @@
+node_modules
+.next
+.out
+.open-next
+.wrangler
+.env
+.env.*
+dist
+.DS_Store
+*.log
+*.tsbuildinfo
+pnpm-lock.yaml
+yarn.lock
+wrangler-state
