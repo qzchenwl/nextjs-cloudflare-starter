@@ -9,6 +9,11 @@ const highlights = [
       "Preconfigured build commands and wrangler tooling tailored for Cloudflare Pages deployments.",
   },
   {
+    title: "D1 + R2 ready",
+    description:
+      "Edge API routes demonstrate how to run database queries and list objects using Cloudflare D1 and R2 bindings.",
+  },
+  {
     title: "Modern UI",
     description:
       "Tailwind CSS 3 with shadcn/ui primitives let you craft accessible interfaces quickly.",

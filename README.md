@@ -7,6 +7,7 @@ A modern Next.js scaffold that runs natively on [Cloudflare Pages](https://devel
 - **Next.js App Router** configured for TypeScript
 - **Tailwind CSS 3** with shadcn/ui primitives and helper utilities
 - **Cloudflare Pages ready** via [`@cloudflare/next-on-pages`](https://github.com/cloudflare/next-on-pages) and Wrangler scripts
+- **Batteries included with D1 + R2** bindings pre-wired for database queries and object storage access on the Edge runtime
 - **Strict linting** using `eslint-config-next`
 - Example API route running on the Edge Runtime plus UI components to kickstart development
 
@@ -50,6 +51,22 @@ Open <http://localhost:3000> to view the application.
 5. Save the configuration and click **Deploy site**. Cloudflare Pages will run the build command and publish the static assets and functions defined in the `.vercel/output` folder.
 6. After the first deployment completes, open the project in the Pages dashboard, go to **Settings → Functions → Compatibility flags**, and add `nodejs_compat` to both the production and preview environments so Node.js built-ins used by Next.js are available at runtime.
 
+### Connecting D1 and R2
+
+This scaffold exposes bindings for Cloudflare [D1](https://developers.cloudflare.com/d1/) and [R2](https://developers.cloudflare.com/r2/) so you can work with relational data and object storage directly from the Edge runtime.
+
+1. Create a D1 database and R2 bucket:
+
+   ```bash
+   wrangler d1 create nextjs-cloudflare-starter-db
+   wrangler r2 bucket create nextjs-cloudflare-starter-assets
+   ```
+
+2. Update the placeholders in `wrangler.toml` with the IDs/names returned by Wrangler. The bindings are declared as `DB` (D1) and `ASSETS` (R2).
+3. Re-run `pnpm cf:build` followed by `pnpm cf:preview` to test locally, or push to your Git provider to deploy.
+
+The sample API route at `/api/hello` automatically detects whether the bindings are configured. When both are available it will run a simple D1 query and list up to five R2 object keys to confirm the integration.
+
 ### Local preview
 
 The included `wrangler.toml` and `pnpm cf:preview` script let you test the same build locally before pushing to Git. Run:
@@ -79,5 +96,10 @@ components/     # Reusable UI components (shadcn/ui)
 lib/            # Shared utilities
 public/         # Static assets
 ```
+
+## Troubleshooting
+
+- If `pnpm dev` fails with `Module not found: Can't resolve '@cloudflare/next-on-pages'`, ensure the dependencies have been
+  installed by running `pnpm install` (or `pnpm install --frozen-lockfile` in CI) before starting the development server.
 
 Happy shipping! 🚀
