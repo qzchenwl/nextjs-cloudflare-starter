@@ -13,6 +13,6 @@ database_name = "nextjs-cloudflare-starter-db"
 database_id = "00000000-0000-0000-0000-000000000000"
 
 [[r2_buckets]]
-binding = "ASSETS"
+binding = "R2"
 # Replace with the bucket name created via `wrangler r2 bucket create`
 bucket_name = "nextjs-cloudflare-starter-assets"

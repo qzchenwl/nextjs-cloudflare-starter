@@ -62,10 +62,10 @@ This scaffold exposes bindings for Cloudflare [D1](https://developers.cloudflare
    wrangler r2 bucket create nextjs-cloudflare-starter-assets
    ```
 
-2. Update the placeholders in `wrangler.toml` with the IDs/names returned by Wrangler **only if you plan to run `pnpm cf:preview` locally**. These bindings are declared as `DB` (D1) and `ASSETS` (R2) so the sample API route can discover them automatically.
+2. Update the placeholders in `wrangler.toml` with the IDs/names returned by Wrangler **only if you plan to run `pnpm cf:preview` locally**. These bindings are declared as `DB` (D1) and `R2` (object storage) so the sample API route can discover them automatically.
 3. When deploying through Cloudflare Pages you can attach the same resources in the dashboard without touching the repository:
    - Go to **Pages → _your project_ → Settings → Functions** and add the D1 database under **D1 Databases** with the binding name `DB`.
-   - In the same screen, add the R2 bucket under **R2 Buckets** with the binding name `ASSETS`.
+   - In the same screen, add the R2 bucket under **R2 Buckets** with the binding name `R2`.
    - Because the scaffold already imports these binding names, no code change is required for production deployments.
 4. Re-run `pnpm cf:build` followed by `pnpm cf:preview` to test locally, or push to your Git provider to deploy.
 

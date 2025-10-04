@@ -35,16 +35,16 @@ export async function GET() {
   })();
 
   const r2 = await (async () => {
-    if (!env?.ASSETS) {
+    if (!env?.R2) {
       return {
         configured: false,
         message:
-          "Add an R2 binding named `ASSETS` in wrangler.toml to access your bucket from the Edge runtime.",
+          "Add an R2 binding named `R2` in wrangler.toml to access your bucket from the Edge runtime.",
       } as const;
     }
 
     try {
-      const { objects } = await env.ASSETS.list({ limit: 5 });
+      const { objects } = await env.R2.list({ limit: 5 });
 
       return {
         configured: true,

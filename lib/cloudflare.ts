@@ -2,7 +2,7 @@ import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export type CloudflareEnv = {
   DB?: D1Database;
-  ASSETS?: R2Bucket;
+  R2?: R2Bucket;
 };
 
 export function getOptionalRequestContext() {
