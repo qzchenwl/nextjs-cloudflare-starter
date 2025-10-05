@@ -34,13 +34,19 @@ The starter follows the [Deploying Next.js apps to Cloudflare Workers with the O
 
    The dev server runs with the OpenNext adapter hooks enabled, so server actions and API routes can access Cloudflare bindings through `getCloudflareContext()`.
 
-4. To preview the Worker locally (using Miniflare + Wrangler):
+4. Build the production bundle and package the Worker output (this generates `.open-next/worker.js` for Wrangler deploys):
+
+   ```bash
+   npm run build
+   ```
+
+5. To preview the Worker locally (using Miniflare + Wrangler):
 
    ```bash
    npm run preview
    ```
 
-5. Deploy to Cloudflare:
+6. Deploy to Cloudflare:
 
    ```bash
    npm run deploy
@@ -53,7 +59,7 @@ The project expects the following resources, already declared in `wrangler.jsonc
 - **D1 database**: `nextjs-cloudflare-starter-db` (ID `057a06ef-544d-4ab3-b464-9288c72c0831`) bound as `DB`.
 - **R2 bucket**: `nextjs-cloudflare-starter-assets` bound as `NOTE_IMAGES`.
 
-Apply the schema to the D1 database before first use:
+The application lazily creates the `notes` table and index if they are missing, but you can also apply the schema ahead of time:
 
 ```bash
 wrangler d1 execute nextjs-cloudflare-starter-db --local --file=database/schema.sql

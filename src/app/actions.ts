@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
+import { ensureNotesSchema } from "@/lib/db";
+
 export type NoteActionState = {
   success: boolean;
   error?: string;
@@ -25,6 +27,8 @@ export async function createNote(
 
   const { env } = await getCloudflareContext({ async: true });
   const db = env.DB;
+
+  await ensureNotesSchema(db);
 
   const id = crypto.randomUUID();
   const createdAt = new Date().toISOString();
